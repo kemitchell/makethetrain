@@ -1,1 +1,158 @@
-<h1>Make the Train</h1>
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>CalTrain Northbound</title>
+		<link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+	</head>
+	<body>
+		<div class="container">
+			<h1>Northbound CalTrains</h1>
+			<table id="trains" class="table">
+				<thead>
+					<tr>
+						<th rowspan="2">Train</th>
+						<th rowspan="2">Type</th>
+						<th colspan="2">Departs</th>
+						<th colspan="2">Arrives</th>
+					</tr>
+					<tr>
+						<th>Cal. Ave.</th>
+						<th>U. Ave.</th>
+						<th>22nd</th>
+						<th>King</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+		<script src="http://code.jquery.com/jquery-2.0.2.min.js"></script>
+		<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+		<script>
+var trains = [
+	{
+		"number": "269",
+		"type": "limited",
+		"times": ["5:11", "5:16", "5:55", "6:02"]
+	}, {
+		"number": "371",
+		"type": "bullet",
+		"times": [null, "5:06", "5:37", "5:44"]
+	}, {
+		"number": "273",
+		"type": "limited",
+		"times": [null, "5:24", "6:21", "6:29"]
+	}, {
+		"number": "375",
+		"type": "bullet",
+		"times": [null, "5:43", "6:17", "6:24"]
+	}, {
+		"number": "277",
+		"type": "limited",
+		"times": [null, "5:54", null, "6:39"]
+	}, {
+		"number": "279",
+		"type": "limited",
+		"times": ["6:11", "6:16", "6:55", "7:02"]
+	}, {
+		"number": "381",
+		"type": "bullet",
+		"times": [null, "6:06", "6:37", "6:44"]
+	}, {
+		"number": "283",
+		"type": "limited",
+		"times": [null, "6:24", "7:21", "7:29"]
+	}, {
+		"number": "385",
+		"type": "bullet",
+		"times": [null, "6:43", "7:17", "7:24"]
+	}, {
+		"number": "287",
+		"type": "limited",
+		"times": [null, "6:54", null, "7:39"]
+	}, {
+		"number": "289",
+		"type": "limited",
+		"times": ["7:06", "7:10", "7:53", "8:00"]
+	}, {
+		"number": "191",
+		"type": "local",
+		"times": ["7:17", "7:21", "8:12", "8:21"]
+	}, {
+		"number": "193",
+		"type": "local",
+		"times": ["7:57", "8:01", "8:52", "9:01"]
+	}, {
+		"number": "195",
+		"type": "local",
+		"times": ["8:57", "9:01", "9:52", "10:01"]
+	}, {
+		"number": "197",
+		"type": "local",
+		"times": ["9:57", "10:01", "10:52", "11:01"]
+	}, {
+		"number": "199",
+		"type": "local",
+		"times": ["10:57", "11:01", "11:52", "12:01"]
+	}
+];
+
+var firstNonNull = function firstNonNull(a) {
+	for (var i = 0, len = a.length; i < len; i++) {
+		var elem = a[i];
+		if (elem != null) {
+			return elem;
+		}
+	}
+	return null;
+}
+
+var displayTrains = function () {
+	var tbody = $('#trains tbody');
+	var d = new Date();
+	var currentHour = d.getHours();
+	var currentMinute = d.getMinutes();
+
+	tbody.empty();
+	for (var i = 0, len = trains.length; i < len; i++) {
+		var train = trains[i];
+
+		var row = $('<tr class="train">')
+		.append($('<th class="number">').text(train.number))
+		.append($('<td class="type">').text(train.type.charAt(0).toUpperCase() + train.type.slice(1)));
+
+		for (var n = 0, nlen = train.times.length; n < nlen; n++) {
+			var time = train.times[n];
+			var firstTime = firstNonNull(train.times);
+
+			var split = firstTime.split(":");
+			var hour = parseInt(split[0]) + 12;
+			var minute = parseInt(split[1]);
+
+			switch (train.type) {
+			case "limited":
+				// row.addClass("warning");
+				break;
+			case "bullet":
+				row.addClass("success");
+				break;
+			default:
+				row.addClass("danger");
+			}
+
+			row.append($('<td class="time">').text(time == null ? "-" : time));
+		}
+
+		if (hour > currentHour || (hour == currentHour && minute >= currentMinute)) {
+			row.appendTo(tbody);
+		}
+	}
+}
+
+jQuery(function () {
+	displayTrains();
+	window.setInterval(displayTrains, 1000);
+});
+		</script>
+	</body>
+</html>
